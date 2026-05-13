@@ -20,7 +20,14 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func readPathHandler(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintln(w, r.URL.Path)
+	switch r.URL.Path {
+	case "/":
+		homeHandler(w, r)
+	case "/contact":
+		contactHandler(w, r)
+	default:
+		http.NotFound(w, r)
+	}
 }
 
 func main() {
@@ -29,6 +36,7 @@ func main() {
 
 	//* register routes
 	mux.HandleFunc("/", readPathHandler)
+	// mux.HandleFunc("/", homeHandler)
 	// mux.HandleFunc("/contact", contactHandler)
 
 	fmt.Println("starting server at :3000")

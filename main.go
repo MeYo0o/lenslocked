@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -20,5 +21,8 @@ func main() {
 	fmt.Println("starting server at :3000")
 
 	//* starting the server
-	http.ListenAndServe(":3000", mux)
+	err := http.ListenAndServe(":3000", mux)
+	if err != nil {
+		log.Fatalf("couldn't start the server.")
+	}
 }

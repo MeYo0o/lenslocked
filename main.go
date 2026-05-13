@@ -19,13 +19,17 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 	<p>To get in touch, email me at <a href="mailto:moaz@innolabs.ai">moaz@innolabs.ai</a></p>`)
 }
 
+func readPathHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintln(w, r.URL.Path)
+}
+
 func main() {
 	//* Define a new server
 	mux := http.NewServeMux()
 
 	//* register routes
-	mux.HandleFunc("/", homeHandler)
-	mux.HandleFunc("/contact", contactHandler)
+	mux.HandleFunc("/", readPathHandler)
+	// mux.HandleFunc("/contact", contactHandler)
 
 	fmt.Println("starting server at :3000")
 

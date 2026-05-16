@@ -6,11 +6,15 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 func main() {
 	//* New chi Router
 	r := chi.NewRouter()
+
+	//* App Middleware "Logger"
+	middleware.Logger(r)
 
 	//* Setup Routes for chi
 	setupRoutes(r)
@@ -28,6 +32,8 @@ func setupRoutes(chi *chi.Mux) {
 	chi.Get("/", homeHandler)
 	chi.Get("/contact", contactHandler)
 	chi.Get("/faq", faqHandler)
+	chi.Get("/metrics/{metricID}", metricsHandler)
+
 }
 
 // * routes to be registered
@@ -58,4 +64,13 @@ bit slower on weekends.</p>
 <h3>Q: How do I contact support?</h3>
 <p>A: Email us - <a href="mailto:support@innolabs.ai">support@innolabs.ai</a></p>
 	`)
+}
+
+// Exercises
+// using URL parameters
+func metricsHandler(w http.ResponseWriter, r *http.Request) {
+	metricID := chi.URLParam(r, "metricID")
+	w.Header().Add("Content-Type", "text/html; charset=UTF-8")
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "<p>Requested Metric: %v</p>", metricID)
 }

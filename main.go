@@ -5,6 +5,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -37,13 +38,11 @@ func setupRoutes(chi *chi.Mux) {
 
 }
 
-// * routes to be registered
-func homeHandler(w http.ResponseWriter, r *http.Request) {
+func executeTemplate(w http.ResponseWriter, filePath string) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
-	//* Go Template
-	t, err := template.ParseFiles("templates/home.gohtml")
+	t, err := template.ParseFiles(filePath)
 	if err != nil {
 		errMsg := "There was an error parsing the template"
 		log.Printf("%ss: %v", errMsg, err)
@@ -58,16 +57,25 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, errMsg, http.StatusInternalServerError)
 		return
 	}
+}
+
+// * routes to be registered
+func homeHandler(w http.ResponseWriter, r *http.Request) {
+	//* Go Template
+	tPath := filepath.Join("templates", "home.gohtml")
+	executeTemplate(w, tPath)
 
 	//* Go Templ
 	// templates.Home().Render(r.Context(), w)
 }
 
 func contactHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprint(w, `<h1>Contact Page</h1>
-	<p>To get in touch, email me at <a href="mailto:moaz@innolabs.ai">moaz@innolabs.ai</a></p>`)
+	//* Go Template
+	tPath := filepath.Join("templates", "contact.gohtml")
+	executeTemplate(w, tPath)
+
+	//* Go Templ
+	// templates.Contact().Render(r.Context(), w)
 }
 
 func faqHandler(w http.ResponseWriter, r *http.Request) {

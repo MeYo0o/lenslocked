@@ -34,8 +34,6 @@ func setupRoutes(chi *chi.Mux) {
 	chi.Get("/", homeHandler)
 	chi.Get("/contact", contactHandler)
 	chi.Get("/faq", faqHandler)
-	chi.Get("/metrics/{metricID}", metricsHandler)
-
 }
 
 func executeTemplate(w http.ResponseWriter, filePath string) {
@@ -79,27 +77,10 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func faqHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprint(w, `
-<h1>FAQ Page</h1>
-<h3>Q: Is there a free version?</h3>
-<p>A: Yes! We offer a free trial for 30 days on any paid plans.</p>
+	//* Go Template
+	tPath := filepath.Join("templates", "faq.gohtml")
+	executeTemplate(w, tPath)
 
-<h3>Q: What are your support hours?</h3>
-<p>A: We have support staff answering emails 24/7, though response times may be a
-bit slower on weekends.</p>
-
-<h3>Q: How do I contact support?</h3>
-<p>A: Email us - <a href="mailto:support@innolabs.ai">support@innolabs.ai</a></p>
-	`)
-}
-
-// Exercises
-// using URL parameters
-func metricsHandler(w http.ResponseWriter, r *http.Request) {
-	metricID := chi.URLParam(r, "metricID")
-	w.Header().Add("Content-Type", "text/html; charset=UTF-8")
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "<p>Requested Metric: %v</p>", metricID)
+	//* Go Templ
+	// templates.FAQ().Render(r.Context(), w)
 }

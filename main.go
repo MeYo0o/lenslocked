@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
 
@@ -24,7 +25,7 @@ func main() {
 	//* starting the server
 	err := http.ListenAndServe(":3000", r)
 	if err != nil {
-		log.Fatalf("couldn't start the server.")
+		log.Fatal("couldn't start the server:", err)
 	}
 }
 
@@ -39,7 +40,27 @@ func setupRoutes(chi *chi.Mux) {
 // * routes to be registered
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	fmt.Fprintf(w, "<h1>Welcome to my awesome site!</h1>")
+	w.WriteHeader(http.StatusOK)
+
+	//* Go Template
+	t, err := template.ParseFiles("templates/home.gohtml")
+	if err != nil {
+		errMsg := "There was an error parsing the template"
+		log.Printf("%ss: %v", errMsg, err)
+		http.Error(w, errMsg, http.StatusInternalServerError)
+		return
+	}
+
+	err = t.Execute(w, nil)
+	if err != nil {
+		errMsg := "There was an error executing the template"
+		log.Printf("%ss: %v", errMsg, err)
+		http.Error(w, errMsg, http.StatusInternalServerError)
+		return
+	}
+
+	//* Go Templ
+	// templates.Home().Render(r.Context(), w)
 }
 
 func contactHandler(w http.ResponseWriter, r *http.Request) {

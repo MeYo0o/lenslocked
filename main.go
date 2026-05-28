@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"path/filepath"
 
+	"github.com/MeYo0o/lenslocked/templates"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
@@ -34,9 +35,10 @@ func setupRoutes(chi *chi.Mux) {
 	chi.Get("/", homeHandler)
 	chi.Get("/contact", contactHandler)
 	chi.Get("/faq", faqHandler)
+	chi.Get("/exercise", exerciseHandler)
 }
 
-func executeTemplate(w http.ResponseWriter, filePath string) {
+func executeTemplate(w http.ResponseWriter, filePath string, data any) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.WriteHeader(http.StatusOK)
 
@@ -48,7 +50,7 @@ func executeTemplate(w http.ResponseWriter, filePath string) {
 		return
 	}
 
-	err = t.Execute(w, nil)
+	err = t.Execute(w, data)
 	if err != nil {
 		errMsg := "There was an error executing the template"
 		log.Printf("%ss: %v", errMsg, err)
@@ -61,7 +63,7 @@ func executeTemplate(w http.ResponseWriter, filePath string) {
 func homeHandler(w http.ResponseWriter, r *http.Request) {
 	//* Go Template
 	tPath := filepath.Join("templates", "home.gohtml")
-	executeTemplate(w, tPath)
+	executeTemplate(w, tPath, nil)
 
 	//* Go Templ
 	// templates.Home().Render(r.Context(), w)
@@ -70,7 +72,7 @@ func homeHandler(w http.ResponseWriter, r *http.Request) {
 func contactHandler(w http.ResponseWriter, r *http.Request) {
 	//* Go Template
 	tPath := filepath.Join("templates", "contact.gohtml")
-	executeTemplate(w, tPath)
+	executeTemplate(w, tPath, nil)
 
 	//* Go Templ
 	// templates.Contact().Render(r.Context(), w)
@@ -79,8 +81,24 @@ func contactHandler(w http.ResponseWriter, r *http.Request) {
 func faqHandler(w http.ResponseWriter, r *http.Request) {
 	//* Go Template
 	tPath := filepath.Join("templates", "faq.gohtml")
-	executeTemplate(w, tPath)
+	executeTemplate(w, tPath, nil)
 
 	//* Go Templ
 	// templates.FAQ().Render(r.Context(), w)
+}
+
+func exerciseHandler(w http.ResponseWriter, r *http.Request) {
+	dataList := struct {
+		Items []string
+	}{
+		[]string{"M", "Y", "D", "A", "M"},
+	}
+
+	//* Go Template
+	tPath := filepath.Join("templates", "exercise.gohtml")
+	executeTemplate(w, tPath, dataList)
+
+	//* Go Templ - i had to make sure the header Content-Type = "text/html" especially for this case because the html elements were being escaped.
+	w.Header().Add("Content-Type", "text/html; charset=utf-8")
+	templates.Exercise(dataList.Items).Render(r.Context(), w)
 }

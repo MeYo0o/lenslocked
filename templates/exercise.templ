@@ -1,0 +1,13 @@
+package templates
+
+templ Exercise(items []string) {
+	if len(items) == 0 {
+		<p>There is no data</p>
+	} else {
+		<ul>
+			for _, item := range items {
+				<li>{ item }</li>
+			}
+		</ul>
+	}
+}
